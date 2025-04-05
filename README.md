@@ -1,2 +1,2 @@
 # DayBreak-Dashboard
-includes necessary information needed for a student in munich. MVG train departure. Weather. Spotify plugin. and more
+includes necessary information for a home dashboard. MVG train departure. Weather. Spotify plugin. and more
