@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morning Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #6340f0;
+            --spotify-green: #1DB954;
+            --text-color: #333;
+            --light-gray: #f5f7fa;
+            --border-color: #eaedf2;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fd;
+            color: var(--text-color);
+        }
+        
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 70px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+        
+        .sidebar-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            color: #888;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+        
+        .sidebar-icon.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .sidebar-icon:first-child {
+            color: var(--primary-color);
+            font-size: 28px;
+            margin-bottom: 40px;
+        }
+        
+        .main-content {
+            margin-left: 90px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .greeting {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .greeting h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .greeting p {
+            color: #888;
+            font-size: 15px;
+        }
+        
+        .time-display {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .time {
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .date {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .widget-card {
+            padding: 20px;
+        }
+        
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .widget-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .widget-tabs {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .widget-tab {
+            background-color: #f0f2f5;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .widget-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .weather-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .weather-details {
+            flex: 1;
+        }
+        
+        .weather-temp {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .weather-location {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .weather-icon {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .weather-desc {
+            color: #888;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        
+        .motivation-quote {
+            font-size: 17px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .motivation-author {
+            text-align: right;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .train-departure {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .train-departure:last-child {
+            border-bottom: none;
+        }
+        
+        .train-line {
+            display: flex;
+            align-items: center;
+        }
+        
+        .train-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            margin-right: 12px;
+        }
+        
+        .train-destination {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .train-time {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Spotify Player Styles */
+        .spotify-player {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .spotify-now-playing {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .spotify-album-art {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background-color: #333;
+            margin-right: 15px;
+            overflow: hidden;
+        }
+        
+        .spotify-album-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .spotify-track-info {
+            flex: 1;
+        }
+        
+        .spotify-track-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .spotify-artist {
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .spotify-progress {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .spotify-progress-bar {
+            height: 4px;
+            width: 100%;
+            background-color: #eee;
+            border-radius: 2px;
+            position: relative;
+        }
+        
+        .spotify-progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 35%;
+            background-color: var(--spotify-green);
+            border-radius: 2px;
+        }
+        
+        .spotify-times {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .spotify-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 5px;
+        }
+        
+        .spotify-control-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #444;
+            transition: all 0.2s;
+        }
+        
+        .spotify-control-button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .spotify-control-button.play-pause {
+            background-color: var(--spotify-green);
+            color: white;
+            font-size: 24px;
+        }
+        
+        .spotify-control-button.play-pause:hover {
+            transform: scale(1.05);
+            background-color: var(--spotify-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-icon">⬢</div>
+        <div class="sidebar-icon active">⌂</div>
+        <div class="sidebar-icon">⚙️</div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div class="greeting">
+                <h1>Good Morning, <span id="username">User</span></h1>
+                <p>Have a nice day.</p>
+            </div>
+            <div class="time-display">
+                <div class="time" id="current-time">8:00 AM</div>
+                <div class="date" id="current-date">Saturday, 5 May 2023</div>
+            </div>
+        </div>
+        
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Weather -->
+            <div class="card widget-card">
+                <div class="widget-header">
+                    <div class="widget-title">Today's Weather</div>
+                    <div class="widget-tabs">
+                        <div class="widget-tab active">Day</div>
+                        <div class="widget-tab">Week</div>
+                    </div>
+                </div>
+                <div class="weather-info">
+                    <div class="weather-details">
+                        <div>07:32 AM</div>
+                        <div class="weather-temp">Drizzling / 25°C</div>
+                        <div class="weather-location">Golden City, Sylhet</div>
+                    </div>
+                    <div class="weather-icon">
+                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='40' r='20' fill='%23FFD700'/><path d='M30,70 Q50,50 70,70 Q85,85 70,90 Q50,100 30,90 Q15,85 30,70' fill='%23E0E0E0'/><path d='M40,85 L37,95 M50,85 L47,98 M60,85 L57,95' stroke='%236340f0' stroke-width='3' stroke-linecap='round'/></svg>" width="100" height="100">
+                    </div>
+                </div>
+                <div class="weather-desc">Today's weather is very nice.</div>
+            </div>
+            
+            <!-- Spotify Player -->
+            <div class="card widget-card">
+                <div class="widget-header">
+                    <div class="widget-title">Spotify</div>
+                </div>
+                <div class="spotify-player">
+                    <div class="spotify-now-playing">
+                        <div class="spotify-album-art">
+                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23333'/><circle cx='50' cy='50' r='30' fill='%231DB954'/><path d='M40,45 L40,55 L55,50 Z' fill='white'/></svg>">
+                        </div>
+                        <div class="spotify-track-info">
+                            <div class="spotify-track-name">Blinding Lights</div>
+                            <div class="spotify-artist">The Weeknd</div>
+                        </div>
+                    </div>
+                    <div class="spotify-progress">
+                        <div class="spotify-progress-bar">
+                            <div class="spotify-progress-fill"></div>
+                        </div>
+                        <div class="spotify-times">
+                            <span>1:24</span>
+                            <span>3:20</span>
+                        </div>
+                    </div>
+                    <div class="spotify-controls">
+                        <div class="spotify-control-button">⏮️</div>
+                        <div class="spotify-control-button play-pause">⏸️</div>
+                        <div class="spotify-control-button">⏭️</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Motivation -->
+            <div class="card widget-card">
+                <div class="widget-header">
+                    <div class="widget-title">Daily Motivation</div>
+                </div>
+                <div class="motivation-quote" id="motivation-quote">
+                    "The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle."
+                </div>
+                <div class="motivation-author" id="motivation-author">- Steve Jobs</div>
+            </div>
+            
+            <!-- Train Departures -->
+            <div class="card widget-card">
+                <div class="widget-header">
+                    <div class="widget-title">Train Departures</div>
+                </div>
+                <div>
+                    <div class="train-departure">
+                        <div class="train-line">
+                            <div class="train-indicator" style="background-color: #4285f4;">L1</div>
+                            <div class="train-destination">Downtown</div>
+                        </div>
+                        <div class="train-time">8:15 AM</div>
+                    </div>
+                    <div class="train-departure">
+                        <div class="train-line">
+                            <div class="train-indicator" style="background-color: #ea4335;">L2</div>
+                            <div class="train-destination">Eastside</div>
+                        </div>
+                        <div class="train-time">8:23 AM</div>
+                    </div>
+                    <div class="train-departure">
+                        <div class="train-line">
+                            <div class="train-indicator" style="background-color: #34a853;">L3</div>
+                            <div class="train-destination">Westpark</div>
+                        </div>
+                        <div class="train-time">8:37 AM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set username
+        document.getElementById('username').textContent = 'Muminul';
+        
+        // Update time and date
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Update time
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            document.getElementById('current-time').textContent = `${hours}:${minutes} ${ampm}`;
+            
+            // Update date
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+        }
+        
+        // Initial update
+        updateDateTime();
+        
+        // Update every minute
+        setInterval(updateDateTime, 60000);
+        
+        // Widget tabs
+        document.querySelectorAll('.widget-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabsContainer = this.parentElement;
+                tabsContainer.querySelector('.widget-tab.active').classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+        
+        // Spotify controls - this would need Spotify API integration for full functionality
+        document.querySelectorAll('.spotify-control-button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.classList.contains('play-pause')) {
+                    // Toggle play/pause
+                    if (this.textContent === '⏸️') {
+                        this.textContent = '▶️';
+                    } else {
+                        this.textContent = '⏸️';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
