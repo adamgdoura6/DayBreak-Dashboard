@@ -21,6 +21,22 @@ const Motivation: React.FC = () => {
     text: "The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle.",
     author: "Steve Jobs"
   });
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const checkTime = () => {
+      const now = new global.Date();
+      const hours = now.getHours();
+      setIsVisible(hours < 10);
+    };
+
+    // Check time immediately
+    checkTime();
+
+    // Check time every minute
+    const interval = setInterval(checkTime, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -46,6 +62,10 @@ const Motivation: React.FC = () => {
     
     return () => clearInterval(interval);
   }, []);
+
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <Card title="Daily Motivation">
