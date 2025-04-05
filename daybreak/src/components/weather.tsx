@@ -15,7 +15,8 @@ import {
   WiSnow,
   WiDust,
   WiFog,
-  WiWindy
+  WiWindy,
+  WiTime3
 } from 'react-icons/wi';
 
 interface WidgetTabProps {
@@ -49,6 +50,9 @@ const WeatherDetails = styled.div`
 const WeatherTime = styled.div`
   font-size: 14px;
   color: #444;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 `;
 
 const WeatherTemp = styled.div`
@@ -99,6 +103,9 @@ const TomorrowTitle = styled.div`
   font-size: 14px;
   font-weight: 600;
   color: #444;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 `;
 
 const TomorrowDetails = styled.div`
@@ -166,6 +173,19 @@ const RainChance = styled.div`
   svg {
     width: 15px;
     height: 15px;
+    margin-right: 2px;
+  }
+`;
+
+const ForecastTime = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+  margin-right: 8px;
+  svg {
+    width: 14px;
+    height: 14px;
     margin-right: 2px;
   }
 `;
@@ -279,7 +299,10 @@ const Weather: React.FC = () => {
         <>
           <WeatherInfo>
             <WeatherDetails>
-              <WeatherTime>{weather.time}</WeatherTime>
+              <WeatherTime>
+                <WiTime3 />
+                {weather.time}
+              </WeatherTime>
               <WeatherTemp>{weather.condition} / {weather.temp}°C</WeatherTemp>
               <WeatherLocation>{weather.location}</WeatherLocation>
             </WeatherDetails>
@@ -293,7 +316,13 @@ const Weather: React.FC = () => {
           {tomorrow && (
             <TomorrowContainer>
               <TomorrowInfo>
-                <TomorrowTitle>Tomorrow</TomorrowTitle>
+                <TomorrowTitle>
+                  Tomorrow
+                  <ForecastTime>
+                    <WiTime3 />
+                    {tomorrow.time}
+                  </ForecastTime>
+                </TomorrowTitle>
                 <TomorrowDetails>
                   {tomorrow.condition}, {tomorrow.minTemp}°C - {tomorrow.maxTemp}°C
                   {tomorrow.chanceOfRain > 0 && `, ${tomorrow.chanceOfRain}% chance of rain`}
@@ -312,7 +341,13 @@ const Weather: React.FC = () => {
               <DayName>{day.date}</DayName>
               <DayCondition>
                 {getWeatherIcon(day.condition)}
-                {day.condition}
+                <div>
+                  {day.condition}
+                  <ForecastTime>
+                    <WiTime3 />
+                    {day.time}
+                  </ForecastTime>
+                </div>
               </DayCondition>
               <DayTemp>
                 {day.minTemp}° - {day.maxTemp}°
